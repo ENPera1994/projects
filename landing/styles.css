@@ -1,0 +1,19 @@
+body {
+    background-color: black;
+  }
+  h1, h3, h4, li {
+    color: yellow; /* Color de fuente blanco para los títulos */
+  }
+
+  
+  p {
+    color: white; /* Color de fuente amarillo para el texto principal */
+  }
+  
+  a, h2 {
+    color: purple; /* Color de fuente morado para los enlaces */
+  }
+
+  #skils li, #interestsAndHobbies li {
+    color: white;
+  }
