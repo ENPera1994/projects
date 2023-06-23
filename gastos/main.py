@@ -1,27 +1,31 @@
-from typing import Union
-
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
-from pydantic import BaseModel
+from routes import expenses_router
+from database import connect_to_database, disconnect_from_database
 
 
 app = FastAPI()
 
-class Item(BaseModel):
-    name: str
-    price: float
-    is_offer: Union[bool, None] = None
+# Configuración CORS para permitir solicitudes desde cualquier origen
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-
+# Ruta raíz para verificar que el servidor esté en funcionamiento
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+async def root():
+    return {"message": "¡La aplicación de seguimiento de gastos está en funcionamiento!"}
 
+# Registrar las rutas relacionadas con los gastos
+app.include_router(expenses_router, prefix="/expenses", tags=["Expenses"])
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_id": item_id}
+if __name__ == "__main__":
+    connect_to_database()  # Conectarse a la base de datos antes de iniciar el servidor
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+    disconnect_from_database()  # Desconectarse de la base de datos después de detener el servidor
+    
