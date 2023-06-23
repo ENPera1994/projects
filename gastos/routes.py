@@ -1,6 +1,18 @@
-from fastapi import APIRouter
-
 from models import Category, Expense
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from . import schemas, models
+from .database import get_db
+
+router = APIRouter()
+
+@router.post("/users", status_code=201)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = models.User(username=user.username, email=user.email, password=user.password)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
 
 expenses_router = APIRouter()
 
